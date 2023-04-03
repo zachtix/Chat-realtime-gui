@@ -31,6 +31,7 @@ def serverHandler(client):
   
   client.close()
   messagebox.showerror('Disconnect', 'Disconnect')
+  GUI.destroy()
 ######################################
 
 
@@ -79,11 +80,12 @@ E1.bind('<Return>', SendMessage)
 username = StringVar()
 
 getname = simpledialog.askstring('name', 'What is your name?')
-if getname == None:
+if getname == None or getname == '':
   num = random.randint(10000,99999)
   getname = str(num)
 username.set(getname)
 chatbox.insert(INSERT, 'Hello ' + getname + '\n')
+GUI.title('Chat Realtime | ' + getname)
 
 
 global client

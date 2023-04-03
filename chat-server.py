@@ -8,23 +8,33 @@ BUFSIZE = 4096
 SERVERIP = '0.0.0.0'
 
 clientList = []
+clientDict = {}
 
 def clientHandler(client, addr):
   while True:
     try:
       data =client.recv(BUFSIZE)
+      check = data.decode('utf-8').split('|')
+      if check[0] == 'NAME':
+        clientDict[str(addr)] = check[1]
     except:
       clientList.remove(client)
       break
 
     if (not data) or (data.decode('utf-8') == 'q'):
+      getname = clientDict[str(addr)]
       clientList.remove(client)
-      print('OUT : ', client)
+      print('OUT : ', getname)
       print('Count Users : ', len(clientList))
       break
-    msg = str(addr) + '>>>' + data.decode('utf-8') + '\n'
-    print('USER : ', msg)
-    print('--------------')
+    # for name in clientDict:
+    check = data.decode('utf-8').split('|')
+    getname = clientDict[str(addr)]
+    if check[0] == 'NAME':
+      msg = getname + ' Join'
+    else:
+      msg = getname + ' : ' + data.decode('utf-8') + '\n'
+    print(msg)
     for c in clientList:
       c.sendall(msg.encode('utf-8'))
   
