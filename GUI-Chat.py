@@ -2,12 +2,10 @@ from tkinter import *
 from tkinter import ttk, simpledialog, messagebox
 import tkinter.scrolledtext as st
 import random
-import json
 
 ######################################
 import socket
 import threading
-import sys
 
 PORT = 7500
 BUFSIZE = 4096
@@ -26,17 +24,32 @@ def serverHandler(client):
 
     # print('USER : ', data.decode('utf-8'))
     allmsg.set(data.decode('utf-8'))
-    chatbox.insert(INSERT, allmsg.get())
-    chatbox.yview(END)
+    insertMessage(allmsg.get())
   
   client.close()
   messagebox.showerror('Disconnect', 'Disconnect')
   GUI.destroy()
 ######################################
 
+def insertMessage(msg):
+  chatbox.config(state=NORMAL)
+  chatbox.insert(INSERT, msg)
+  chatbox.config(state=DISABLED)
+  chatbox.yview(END)
+
 
 GUI = Tk()
-GUI.geometry('650x750+300+50')
+# GUI.geometry('650x750+300+50')
+w = 650
+h = 750
+
+ws = GUI.winfo_screenwidth()
+hs = GUI.winfo_screenheight()
+
+x = (ws/2) - (w/2)
+y = (hs/2) - (h/2)
+
+GUI.geometry(f'{w}x{h}+{x:.0f}+{y:.0f}')
 GUI.title('Chat Realtime')
 
 FONT1= ('Angsana New', 35)
@@ -49,6 +62,7 @@ allmsg = StringVar()
 
 chatbox = st.ScrolledText(F1, width=39, heigh=10, font=FONT1)
 chatbox.pack(expand=True, fill='x')
+chatbox.config(state=DISABLED)
 
 v_msg = StringVar()
 
@@ -63,8 +77,6 @@ def SendMessage(event=None):
     msg = v_msg.get()
     allmsg.set(msg)
     client.sendall(msg.encode('utf-8'))
-    # chatbox.insert(INSERT, allmsg.get())
-    # chatbox.yview(END)
     v_msg.set('') #clear msg
     E1.focus()
 
@@ -84,7 +96,7 @@ if getname == None or getname == '':
   num = random.randint(10000,99999)
   getname = str(num)
 username.set(getname)
-chatbox.insert(INSERT, 'Hello ' + getname + '\n')
+insertMessage('Hello ' + getname + '\n')
 GUI.title('Chat Realtime | ' + getname)
 
 

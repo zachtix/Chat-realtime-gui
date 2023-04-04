@@ -2,6 +2,7 @@ import socket
 import datetime
 import threading
 import json
+import sys
 
 PORT = 7500
 BUFSIZE = 4096
@@ -9,6 +10,7 @@ SERVERIP = '0.0.0.0'
 
 clientList = []
 clientDict = {}
+    
 
 def clientHandler(client, addr):
   while True:
@@ -31,7 +33,7 @@ def clientHandler(client, addr):
     check = data.decode('utf-8').split('|')
     getname = clientDict[str(addr)]
     if check[0] == 'NAME':
-      msg = getname + ' Join'
+      msg = getname + ' Join' + '\n'
     else:
       msg = getname + ' : ' + data.decode('utf-8') + '\n'
     print(msg)
@@ -45,10 +47,11 @@ server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server.bind((SERVERIP, PORT))
 server.listen(5)
 
-while True:
-  client, addr = server.accept()
-  clientList.append(client)
-  print('Count Users : ', len(clientList))
+if __name__ == '__main__':
+  while True:
+    client, addr = server.accept()
+    clientList.append(client)
+    print('Count Users : ', len(clientList))
 
-  task = threading.Thread(target = clientHandler, args = (client, addr))
-  task.start()
+    task = threading.Thread(target = clientHandler, args = (client, addr))
+    task.start()
